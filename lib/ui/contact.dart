@@ -1,0 +1,122 @@
+import 'dart:io';
+
+import 'package:agenda_contatos/helpers/contact_helper.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+class ContactPage extends StatefulWidget {
+  final Contact contact;
+
+  ContactPage({this.contact});
+
+  @override
+  _ContactPageState createState() => _ContactPageState();
+}
+
+class _ContactPageState extends State<ContactPage> {
+  Contact _edtContact;
+
+  bool _userEdited = false;
+
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.contact == null) {
+      _edtContact = Contact();
+    } else {
+      _edtContact = Contact.fromMap(widget.contact.toMap());
+      _nameController.text = _edtContact.name;
+      _emailController.text= _edtContact.email;
+      _phoneController.text= _edtContact.phone;
+
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(_edtContact.name ?? "Novo Contato"),
+        backgroundColor: Colors.red,
+        centerTitle: true,
+      ),
+      body: Padding(
+          padding: EdgeInsets.only(top: 10),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                GestureDetector(
+                  child: Container(
+                    height: 150,
+                    width: 150,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      image: DecorationImage(
+                        image: _edtContact.img != null
+                            ? FileImage(File(_edtContact.img))
+                            : AssetImage("images/person.jpg"),
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(10),
+                  child: TextField(
+                    controller: _nameController,
+                    onChanged: (text) {
+                      _userEdited = true;
+                      setState(() {
+                        _edtContact.name = text;
+                      });
+                    },
+                    decoration: InputDecoration(
+                      labelText: "Nome",
+                      labelStyle: TextStyle(fontSize: 20),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(10),
+                  child: TextField(
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    onChanged: (text) {
+                      _userEdited = true;
+                      _edtContact.email = text;
+                    },
+                    decoration: InputDecoration(
+                      labelText: "Email",
+                      labelStyle: TextStyle(fontSize: 20),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(10),
+                  child: TextField(
+                    controller: _phoneController,
+                    keyboardType: TextInputType.phone,
+                    onChanged: (text) {
+                      _userEdited = true;
+                      _edtContact.phone = text;
+                    },
+                    decoration: InputDecoration(
+                      labelText: "Phone",
+                      labelStyle: TextStyle(fontSize: 20),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          )),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.save),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+}
